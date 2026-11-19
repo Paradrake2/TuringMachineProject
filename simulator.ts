@@ -30,7 +30,7 @@ export function runTuringMachine(config: TuringConfig): { result: "ACCEPT" | "RE
         maxSteps = 1000
     } = config;
 
-    let currentTape = [...tape];
+    const currentTape = [...tape];
     let currentHead = head;
     let currentState = state;
     const log: string[] = [];

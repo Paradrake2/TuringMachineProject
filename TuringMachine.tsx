@@ -26,6 +26,20 @@ export default function TuringMachine() {
     });
     const [output, setOutput] = useState<string>("");
 
+    const loadExample = () => {
+        setInput("101");
+        setAlphabet("0,1,_");
+        setAlphabetSet(["0", "1", "_"]);
+        setStateList(["q0", "q_accept"]);
+        setAcceptStates(new Set(["q_accept"]));
+        setTransitions([
+            { fromState: "q0", readSymbol: "1", toState: "q0", writeSymbol: "0", direction: "R" },
+            { fromState: "q0", readSymbol: "0", toState: "q0", writeSymbol: "1", direction: "R" },
+            { fromState: "q0", readSymbol: "_", toState: "q_accept", writeSymbol: "_", direction: "S" },
+        ]);
+        setOutput("");
+    };
+
     const handleAlphabetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setAlphabet(value);
@@ -46,7 +60,7 @@ export default function TuringMachine() {
     };
 
     const addTransition = () => {
-        const { fromState, readSymbol, toState, writeSymbol, direction } = newTransition;
+        const { fromState, readSymbol, toState, writeSymbol } = newTransition;
         if (fromState && readSymbol && toState && writeSymbol) {
             setTransitions([...transitions, newTransition]);
             setNewTransition({ fromState: "", readSymbol: "", toState: "", writeSymbol: "", direction: "R" });
@@ -79,14 +93,16 @@ export default function TuringMachine() {
             steps++;
         }
 
-        let result = acceptStates.has(currentState) ? "Accepted" : "Rejected";
+        const result = acceptStates.has(currentState) ? "Accepted" : "Rejected";
         setOutput(`${tape.join("")} | ${result} | ${currentState}`);
 
     };
 
     return (
         <div className="p-6 text-white bg-gray-900 min-h-screen">
-            <h1 className="text-3xl font-bold mb-4">Turing Machine Simulator</h1>
+            <h2 className="text-3xl font-bold mb-4">Try the simulator</h2>
+            <p className="mb-4">Start in q0, use _ for a blank cell, and define a transition for each symbol. Try the example to flip each bit in 101.</p>
+            <button type="button" onClick={loadExample} className="button button-secondary mb-6">Load bit-flip example</button>
             <label className="block mb-2">
                 Input Tape: <input
                     value={input}
@@ -96,7 +112,7 @@ export default function TuringMachine() {
                 />
             </label>
             <p className="mt-4">Input: {input}</p>
-            <p className="mt-2 text-sm text-gray-400">Output: {output}</p>
+            <p className="mt-2 text-sm text-gray-300" role="status">Output: {output}</p>
             <button onClick={runTuringMachine} className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 rounded">
                 Run Machine
             </button>
@@ -117,6 +133,7 @@ export default function TuringMachine() {
                 <div className="flex gap-2 mb-2">
                     <input
                         type="text"
+                        aria-label="New state name"
                         value={newState}
                         onChange={(e) => setNewState(e.target.value)}
                         className="flex-1 p-2 bg-gray-800 border border-gray-700 rounded"
@@ -166,33 +183,38 @@ export default function TuringMachine() {
 
             <div className="mt-6">
                 <h2 className="text-xl font-semibold mb-2">Transition Rules</h2>
-                <div className="grid grid-cols-5 gap-2 mb-2">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-2">
                     <input
                         value={newTransition.fromState}
+                        aria-label="Transition from state"
                         onChange={(e) => setNewTransition({ ...newTransition, fromState: e.target.value })}
                         placeholder="From state"
                         className="p-2 bg-gray-800 border border-gray-700 rounded"
                     />
                     <input
                         value={newTransition.readSymbol}
+                        aria-label="Symbol to read"
                         onChange={(e) => setNewTransition({ ...newTransition, readSymbol: e.target.value })}
                         placeholder="Read"
                         className="p-2 bg-gray-800 border border-gray-700 rounded"
                     />
                     <input
                         value={newTransition.toState}
+                        aria-label="Transition to state"
                         onChange={(e) => setNewTransition({ ...newTransition, toState: e.target.value })}
                         placeholder="To state"
                         className="p-2 bg-gray-800 border border-gray-700 rounded"
                     />
                     <input
                         value={newTransition.writeSymbol}
+                        aria-label="Symbol to write"
                         onChange={(e) => setNewTransition({ ...newTransition, writeSymbol: e.target.value })}
                         placeholder="Write"
                         className="p-2 bg-gray-800 border border-gray-700 rounded"
                     />
                     <select
                         value={newTransition.direction}
+                        aria-label="Head movement direction"
                         onChange={(e) => setNewTransition({ ...newTransition, direction: e.target.value as "L" | "R" | "S"})}
                         className="p-2 bg-gray-800 border border-gray-700 rounded"
                     >
